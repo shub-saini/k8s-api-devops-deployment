@@ -11,6 +11,8 @@ spec:
       labels:
         app: backend-api
     spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
       containers:
         - name: backend-api
           # Image tag will be automatically updated during cicd
@@ -18,30 +20,30 @@ spec:
           ports:
             - containerPort: 3000
 
-      resources:
-        requests:
-          memory: '256Mi' # Minimum guaranteed
-          cpu: '250m' # 0.25 CPU cores
-        limits:
-          memory: '512Mi' # Maximum allowed
-          cpu: '500m' # 0.5 CPU cores
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            readOnlyRootFilesystem: true #
+            capabilities:
+              drop:
+                - ALL # Drop all Linux capabilities
 
-      securityContext:
-        allowPrivilegeEscalation: false
-        runAsNonRoot: true
-        runAsUser: 1000
-        readOnlyRootFilesystem: true #
-        capabilities:
-          drop:
-            - ALL # Drop all Linux capabilities
+          livenessProbe:
+            httpGet:
+              path: /healthz # Endpoint to check if app is alive
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
 
-      livenessProbe:
-        httpGet:
-          path: /healthz # Endpoint to check if app is alive
-          port: http
-          scheme: HTTP
-        initialDelaySeconds: 30
-        periodSeconds: 10
-        timeoutSeconds: 5
-        successThreshold: 1
-        failureThreshold: 3
+          # resources:
+          #   requests:
+          #     memory: '256Mi' # Minimum guaranteed
+          #     cpu: '250m' # 0.25 CPU cores
+          #   limits:
+          #     memory: '512Mi' # Maximum allowed
+          #     cpu: '500m' # 0.5 CPU cores
