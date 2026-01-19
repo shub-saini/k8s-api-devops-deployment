@@ -16,7 +16,7 @@ spec:
       containers:
         - name: backend-api
           # Image tag will be automatically updated during cicd
-          image: ghcr.io/shub-saini/k8s-api-devops-deployment:sha-577357511aeb4be53fb8df8e1770a54efcdd0bc2
+          image: ghcr.io/shub-saini/k8s-api-devops-deployment:sha-814ee87729ac91a0a78456d0c81117311c48e05b
           ports:
             - containerPort: 3000
 
