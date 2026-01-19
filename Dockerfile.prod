@@ -1,0 +1,11 @@
+FROM oven/bun AS base
+WORKDIR /app
+
+COPY bun.lock package.json ./
+RUN bun install --production --frozen-lockfile
+COPY . .
+RUN bunx prisma generate
+
+EXPOSE 3000
+
+CMD ["bun", "src/app.ts"]

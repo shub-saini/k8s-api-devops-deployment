@@ -1,0 +1,11 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert
+spec:
+  secretName: tls-cert-ca-key-pair
+  issuerRef:
+    name: letsencrypt-ci
+    kind: ClusterIssuer
+  dnsNames:
+    - app.vyntix.tech

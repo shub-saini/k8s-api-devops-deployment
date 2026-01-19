@@ -4,7 +4,9 @@ import errorHandler from './middlewares/error.middleware';
 import client from 'prom-client';
 import { metricsMiddleware } from './middlewares/metrics.middeware';
 import cookieParser from 'cookie-parser';
+import logger from './config/logger';
 
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
@@ -25,6 +27,10 @@ app.get('/metrics', async (req, res) => {
   const metrics = await client.register.metrics();
   res.set('Content-Type', client.register.contentType);
   res.send(metrics);
+});
+
+app.listen(PORT, () => {
+  logger.info('Server started', { port: PORT });
 });
 
 export default app;

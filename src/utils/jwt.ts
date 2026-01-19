@@ -7,8 +7,7 @@ export interface JwtPayload {
   email: string;
 }
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || 'your-secret-key-please-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 const JWT_EXPIRES_IN = '1d';
 
 export const signToken = (payload: JwtPayload): string => {
