@@ -12,7 +12,7 @@ spec:
         app: backend-api
     spec:
       - name: backend-api
-        image:
+        image: '{{ secrets.}}'
         ports:
           - containerPort: 3000
 
