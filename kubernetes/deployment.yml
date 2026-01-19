@@ -12,7 +12,8 @@ spec:
         app: backend-api
     spec:
       - name: backend-api
-        image: ghrc.io/shub-saini/k8s-api-devops-deployment:tag # Image tag will be automatically updated during cicd
+        # Image tag will be automatically updated during cicd
+        image: ghrc.io/shub-saini/k8s-api-devops-deployment:tag
         ports:
           - containerPort: 3000
 
