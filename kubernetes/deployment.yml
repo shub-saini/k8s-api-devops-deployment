@@ -15,8 +15,8 @@ spec:
         - name: ghcr-pull-secret
       containers:
         - name: backend-api
-          image: ghcr.io/shub-saini/k8s-api-devops-deployment:sha-577357511aeb4be53fb8df8e1770a54efcdd0bc2
           # Image tag will be automatically updated during cicd
+          image: ghcr.io/shub-saini/k8s-api-devops-deployment:sha-577357511aeb4be53fb8df8e1770a54efcdd0bc2
           ports:
             - containerPort: 3000
           envFrom:
