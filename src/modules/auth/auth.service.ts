@@ -1,7 +1,5 @@
-// src/modules/auth/auth.service.ts
 import bcrypt from 'bcryptjs';
 import prisma from '../../config/prisma';
-import { signToken } from '../../utils/jwt';
 import logger from '../../config/logger';
 
 export const register = async (email: string, password: string) => {

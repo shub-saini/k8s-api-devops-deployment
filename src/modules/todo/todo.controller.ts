@@ -1,4 +1,3 @@
-// src/modules/todo/todo.controller.ts
 import type { Request, Response, NextFunction } from 'express';
 import * as service from './todo.service';
 

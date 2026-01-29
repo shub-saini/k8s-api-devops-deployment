@@ -1,11 +1,22 @@
-FROM oven/bun AS base
-WORKDIR /app
+# FROM oven/bun:1-debian AS build
+# WORKDIR /app
+# COPY bun.lock package.json ./
+# RUN bun install --production --frozen-lockfile
+# COPY . .
+# RUN bunx prisma generate
+# RUN bun run build
 
+# FROM oven/bun:1-debian AS runner
+# WORKDIR /app
+# COPY --from=build /app/dist/app.js .
+# EXPOSE 3000
+# CMD ["bun", "app.js"]
+
+FROM oven/bun:1-debian AS build
+WORKDIR /app
 COPY bun.lock package.json ./
 RUN bun install --production --frozen-lockfile
 COPY . .
 RUN bunx prisma generate
-
 EXPOSE 3000
-
-CMD ["bun", "src/app.ts"]
+CMD ["bun", "src/app.js"]

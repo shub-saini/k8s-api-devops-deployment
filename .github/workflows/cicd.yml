@@ -5,7 +5,8 @@ on:
     branches: [main]
     paths-ignore:
       - "k8s/**"
-      - "terraform/**"
+      - "terraform-aws-old/**"
+      - "terraform-gcp/**"
 
 jobs:
   build:

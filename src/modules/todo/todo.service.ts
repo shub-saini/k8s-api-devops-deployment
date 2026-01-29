@@ -1,4 +1,3 @@
-// src/modules/todo/todo.service.ts
 import prisma from '../../config/prisma';
 
 export const createTodo = (userId: string, title: string) =>
