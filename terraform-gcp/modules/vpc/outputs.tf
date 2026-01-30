@@ -17,11 +17,11 @@ output "subnets" {
   description = "Map of all subnets created"
   value = {
     for name, subnet in google_compute_subnetwork.subnets : name => {
-      id         = subnet.id
-      name       = subnet.name
-      self_link  = subnet.self_link
-      cidr_range = subnet.ip_cidr_range
-      region     = subnet.region
+      id                  = subnet.id
+      name                = subnet.name
+      self_link           = subnet.self_link
+      cidr_range          = subnet.ip_cidr_range
+      region              = subnet.region
       secondary_ip_ranges = subnet.secondary_ip_range
     }
   }

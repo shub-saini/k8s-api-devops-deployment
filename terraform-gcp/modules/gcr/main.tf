@@ -28,9 +28,11 @@ resource "google_artifact_registry_repository" "container_repo" {
 
 # IAM binding to allow GKE nodes to pull images
 resource "google_artifact_registry_repository_iam_member" "gke_reader" {
+  for_each = var.gke_service_account
+
   project    = var.project_id
   location   = google_artifact_registry_repository.container_repo.location
   repository = google_artifact_registry_repository.container_repo.name
   role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${var.gke_service_account}"
+  member     = "serviceAccount:${each.value}"
 }

@@ -2,6 +2,7 @@ resource "random_id" "project" {
   byte_length = 2
 }
 
+
 resource "google_project" "staging" {
   name            = var.project_name
   project_id      = "${var.project_name}-${random_id.project.dec}"
@@ -9,8 +10,12 @@ resource "google_project" "staging" {
   org_id          = var.org_id
 }
 
+locals {
+  project_id = google_project.staging.project_id
+}
+
 resource "google_project_service" "apis" {
-  project = google_project.staging.project_id
+  project = local.project_id
 
   for_each = toset(var.apis)
   service  = each.key
@@ -22,7 +27,7 @@ module "vpc" {
   source = "./modules/vpc"
 
   name       = var.vpc_name
-  project_id = google_project.staging.project_id
+  project_id = local.project_id
   region     = var.region
 
 
@@ -51,6 +56,14 @@ module "vpc" {
     }
   ]
 
+  routes = [
+    {
+      name             = "default-route"
+      dest_range       = "0.0.0.0/0"
+      next_hop_gateway = "default-internet-gateway"
+    }
+  ]
+
   cloud_nat = {
     name                   = "main-nat"
     nat_ip_allocate_option = "MANUAL_ONLY"
@@ -76,7 +89,51 @@ module "vpc" {
   ]
 
   depends_on = [
-    google_project_service.apis
+    google_project_service.apis, google_project.staging
   ]
 }
 
+module "gke" {
+  source = "./modules/gke"
+
+  name       = "staging-gke"
+  project_id = local.project_id
+  region     = var.region
+
+  network_self_link             = module.vpc.vpc_self_link
+  subnetwork_self_link          = module.vpc.subnets["private-subnet-1"].self_link
+  pods_secondary_range_name     = "gke-pods"
+  services_secondary_range_name = "gke-services"
+
+  master_ipv4_cidr_block = "10.0.64.0/28"
+  enable_private_cluster  = true
+  enable_private_endpoint = false
+
+  node_pools = [
+    {
+      name           = "default-pool"
+      machine_type   = "e2-medium"
+      min_node_count = 1
+      max_node_count = 3
+      disk_size_gb   = 100
+      spot           = false # Don't use Spot for system workloads
+    },
+  ]
+
+  enable_workload_identity = true
+  enable_network_policy    = true
+  deletion_protection = false
+
+  depends_on = [ google_project.staging, google_project_service.apis ]
+}
+
+module "gcr" {
+  source = "./modules/gcr"
+
+  location = var.region
+  project_id = local.project_id
+  repository_id = "stage-images"
+  gke_service_account = module.gke.node_pool_service_accounts
+
+  depends_on = [ google_project_service.apis, module.gke ]
+}

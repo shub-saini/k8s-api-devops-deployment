@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "terraform_state_bucket" {
-  name          = "${google_project.staging.project_id}-tfstate-bucket"
-  project       = google_project.staging.project_id
+  name          = var.name 
+  project       = var.project_id
   location      = var.region
   storage_class = "STANDARD"
 
@@ -23,5 +23,5 @@ resource "google_storage_bucket" "terraform_state_bucket" {
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
 
-  depends_on = [google_project_service.apis]
+#   depends_on = [google_project_service.apis]
 }
