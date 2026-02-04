@@ -114,8 +114,9 @@ module "gke" {
       name           = "default-pool"
       machine_type   = "e2-medium"
       min_node_count = 1
-      max_node_count = 3
-      disk_size_gb   = 100
+      max_node_count = 2
+      disk_size_gb   = 80
+      disk_type      = "pd-standard"
       spot           = false
     },
   ]
@@ -133,7 +134,8 @@ module "gcr" {
   location            = var.region
   project_id          = local.project_id
   repository_id       = "stage-images"
-  gke_service_account = module.gke.node_pool_service_accounts
+  // it create iam binding for gke's service account, so gke can pull images from gcr repo
+  gke_service_account = module.gke.node_pool_service_accounts 
 
   depends_on = [google_project_service.apis, module.gke]
 }

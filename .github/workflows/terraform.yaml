@@ -77,7 +77,7 @@ jobs:
     needs: plan
     runs-on: ubuntu-latest
 
-    environment: staging
+    environment: staging # Manual review needed for apply job because of this
 
     steps:
       - name: Checkout source code
