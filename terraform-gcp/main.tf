@@ -105,7 +105,7 @@ module "gke" {
   pods_secondary_range_name     = "gke-pods"
   services_secondary_range_name = "gke-services"
 
-  master_ipv4_cidr_block = "10.0.64.0/28"
+  master_ipv4_cidr_block  = "10.0.64.0/28"
   enable_private_cluster  = true
   enable_private_endpoint = false
 
@@ -116,24 +116,24 @@ module "gke" {
       min_node_count = 1
       max_node_count = 3
       disk_size_gb   = 100
-      spot           = false # Don't use Spot for system workloads
+      spot           = false
     },
   ]
 
   enable_workload_identity = true
   enable_network_policy    = true
-  deletion_protection = false
+  deletion_protection      = false
 
-  depends_on = [ google_project.staging, google_project_service.apis ]
+  depends_on = [google_project.staging, google_project_service.apis]
 }
 
 module "gcr" {
   source = "./modules/gcr"
 
-  location = var.region
-  project_id = local.project_id
-  repository_id = "stage-images"
+  location            = var.region
+  project_id          = local.project_id
+  repository_id       = "stage-images"
   gke_service_account = module.gke.node_pool_service_accounts
 
-  depends_on = [ google_project_service.apis, module.gke ]
+  depends_on = [google_project_service.apis, module.gke]
 }

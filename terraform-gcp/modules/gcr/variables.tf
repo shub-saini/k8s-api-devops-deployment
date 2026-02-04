@@ -16,5 +16,5 @@ variable "repository_id" {
 variable "gke_service_account" {
   description = "GKE service account email that needs pull access"
   type        = map(string)
-  default = {}
+  default     = {}
 }

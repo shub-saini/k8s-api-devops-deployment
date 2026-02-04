@@ -38,15 +38,13 @@ resource "google_container_cluster" "primary" {
   project  = var.project_id
   location = var.region
 
-  # Network configuration
   network    = var.network_self_link
   subnetwork = var.subnetwork_self_link
 
   # Remove default node pool (we'll create custom ones)
   remove_default_node_pool = true
-    initial_node_count       = 1
+  initial_node_count       = 1
 
-  # Release channel for auto-updates
   release_channel {
     channel = var.release_channel
   }
@@ -56,7 +54,6 @@ resource "google_container_cluster" "primary" {
     services_secondary_range_name = var.services_secondary_range_name
   }
 
-  # Private cluster configuration
   dynamic "private_cluster_config" {
     for_each = var.enable_private_cluster ? [1] : []
     content {
@@ -67,18 +64,18 @@ resource "google_container_cluster" "primary" {
   }
 
   # Master authorized networks (who can access K8s API)
-#   dynamic "master_authorized_networks_config" {
-#     for_each = length(var.master_authorized_networks) > 0 ? [1] : []
-#     content {
-#       dynamic "cidr_blocks" {
-#         for_each = var.master_authorized_networks
-#         content {
-#           cidr_block   = cidr_blocks.value.cidr_block
-#           display_name = cidr_blocks.value.display_name
-#         }
-#       }
-#     }
-#   }
+  #   dynamic "master_authorized_networks_config" {
+  #     for_each = length(var.master_authorized_networks) > 0 ? [1] : []
+  #     content {
+  #       dynamic "cidr_blocks" {
+  #         for_each = var.master_authorized_networks
+  #         content {
+  #           cidr_block   = cidr_blocks.value.cidr_block
+  #           display_name = cidr_blocks.value.display_name
+  #         }
+  #       }
+  #     }
+  #   }
 
   # Workload Identity (lets K8s pods authenticate as GCP service accounts)
   dynamic "workload_identity_config" {
@@ -107,7 +104,6 @@ resource "google_container_cluster" "primary" {
   # Labels
   resource_labels = var.resource_labels
 
-  # Protection
   deletion_protection = var.deletion_protection
 
   lifecycle {
@@ -127,30 +123,24 @@ resource "google_container_node_pool" "pools" {
   cluster  = google_container_cluster.primary.name
 
   # Specific zones for this pool
-  node_locations = each.value.node_locations
+  node_locations     = each.value.node_locations
   initial_node_count = each.value.initial_node_count
 
-  
-
-  # Autoscaling
   autoscaling {
     min_node_count = each.value.min_node_count
     max_node_count = each.value.max_node_count
   }
 
-  # Auto-repair and auto-upgrade
   management {
     auto_repair  = true
     auto_upgrade = true
   }
 
-  # Node configuration
   node_config {
     machine_type = each.value.machine_type
     disk_size_gb = each.value.disk_size_gb
     disk_type    = each.value.disk_type
 
-    # Spot VMs (cheap but can be preempted)
     spot = each.value.spot
 
     # Service account (use provided one or auto-created one)
@@ -160,7 +150,6 @@ resource "google_container_node_pool" "pools" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
 
-    # Labels (for organization)
     labels = merge(
       each.value.labels,
       {
@@ -169,13 +158,11 @@ resource "google_container_node_pool" "pools" {
       }
     )
 
-    # Tags (for firewall rules)
     tags = concat(
       each.value.tags,
       ["gke-${var.name}", "gke-${var.name}-${each.value.name}"]
     )
 
-    # Taints (for pod scheduling)
     dynamic "taint" {
       for_each = each.value.taints
       content {

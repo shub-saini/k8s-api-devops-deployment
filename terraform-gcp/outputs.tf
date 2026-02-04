@@ -2,10 +2,6 @@ output "project_id" {
   value = google_project.staging.project_id
 }
 
-output "terraform_state_bucket" {
-  value = google_storage_bucket.terraform_state_bucket.name
-}
-
 output "enabled_apis" {
   description = "List of enabled APIs in the project"
   value       = [for api in google_project_service.apis : api.service]
@@ -61,7 +57,7 @@ output "kubectl_command" {
   value = module.gke.kubectl_command
 }
 
-# =============== k8s cluster ===================
+# =============== artifact registry ===================
 output "repository_id" {
   value = module.gcr.repository_id
 }

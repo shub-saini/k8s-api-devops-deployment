@@ -14,7 +14,7 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "staging-50780-tfstate-bucket" // change this manually after bucket creation
+    bucket = "terraform-staging-state-bucket789" // change this manually after bucket creation
     prefix = "terraform/state"
   }
 }

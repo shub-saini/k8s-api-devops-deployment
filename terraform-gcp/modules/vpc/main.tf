@@ -30,18 +30,18 @@ resource "google_compute_subnetwork" "subnets" {
 resource "google_compute_route" "routes" {
   for_each = { for route in var.routes : route.name => route }
 
-  name             = "${var.name}-${each.value.name}"
-  description      = each.value.description
-  dest_range       = each.value.dest_range
-  network          = google_compute_network.vpc.id
-  priority         = each.value.priority
-  tags             = each.value.tags
-  project          = var.project_id
+  name        = "${var.name}-${each.value.name}"
+  description = each.value.description
+  dest_range  = each.value.dest_range
+  network     = google_compute_network.vpc.id
+  priority    = each.value.priority
+  tags        = each.value.tags
+  project     = var.project_id
 
-  next_hop_gateway     = each.value.next_hop_gateway
-  next_hop_ip          = each.value.next_hop_ip
-  next_hop_instance    = each.value.next_hop_instance
-  next_hop_vpn_tunnel  = each.value.next_hop_vpn_tunnel
+  next_hop_gateway    = each.value.next_hop_gateway
+  next_hop_ip         = each.value.next_hop_ip
+  next_hop_instance   = each.value.next_hop_instance
+  next_hop_vpn_tunnel = each.value.next_hop_vpn_tunnel
 }
 
 # NAT External IPs (only if using MANUAL_ONLY allocation)
@@ -55,8 +55,7 @@ resource "google_compute_address" "nat" {
   project      = var.project_id
 }
 
-# Cloud Router
-resource "google_compute_router" "router" {
+resource "google_compute_router" "cloud_router" {
   count = local.create_nat ? 1 : 0
 
   name    = "${var.name}-router"
@@ -70,7 +69,7 @@ resource "google_compute_router_nat" "nat" {
 
   name    = "${var.name}-${var.cloud_nat.name}"
   region  = var.region
-  router  = google_compute_router.router[0].name
+  router  = google_compute_router.cloud_router[0].name
   project = var.project_id
 
   nat_ip_allocate_option             = var.cloud_nat.nat_ip_allocate_option

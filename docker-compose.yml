@@ -7,8 +7,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: appdb
-    volumes:
-      - pgdata:/var/lib/postgresql
+    # volumes:
+    #   - pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -18,12 +18,12 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
     ports:
       - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/appdb
       - JWT_SECRET=topsecret
@@ -43,37 +43,36 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+#   prometheus:
+#     image: prom/prometheus:latest
+#     ports:
+#       - "9090:9090"
+#     volumes:
+#       - ./monitoring/local-prometheus.yml:/etc/prometheus/prometheus.yml
+#       - prometheus-data:/prometheus
+#     command:
+#       - "--config.file=/etc/prometheus/prometheus.yml"
+#       - "--storage.tsdb.path=/prometheus"
+#       - "--web.enable-lifecycle"
+#       - "--web.enable-admin-api"
+#     depends_on:
+#       api:
+#         condition: service_healthy
 
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/local-prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.enable-lifecycle"
-      - "--web.enable-admin-api"
-    depends_on:
-      api:
-        condition: service_healthy
+#   grafana:
+#     image: grafana/grafana:latest
+#     ports:
+#       - "3001:3000"
+#     environment:
+#       - GF_SECURITY_ADMIN_PASSWORD=admin
+#       - GF_SECURITY_ADMIN_USER=admin
+#       - GF_USERS_ALLOW_SIGN_UP=false
+#     volumes:
+#       - grafana-data:/var/lib/grafana
+#     depends_on:
+#       - prometheus
 
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana-data:/var/lib/grafana
-    depends_on:
-      - prometheus
-
-volumes:
-  pgdata:
-  prometheus-data:
-  grafana-data:
+# volumes:
+#   pgdata:
+#   prometheus-data:
+#   grafana-data:

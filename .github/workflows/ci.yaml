@@ -1,15 +1,16 @@
-name: CI/CD Pipeline
+name: Continuos Integration
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "k8s/**"
-      - "terraform-aws-old/**"
-      - "terraform-gcp/**"
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+  #   paths-ignore:
+  #     - "helm-kubernetes/**"
+  #     - "terraform-aws-old/**"
+  #     - "terraform-gcp/**"
 
 jobs:
-  build:
+  build-verify:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -93,41 +94,3 @@ jobs:
       - name: Set image tag output
         id: set_output
         run: echo "image_tag=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
-
-  update-k8s-deployment-manifest:
-    name: Update Kubernetes Deployment
-    runs-on: ubuntu-latest
-    needs: [docker]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.TOKEN }}
-
-      - name: Setup Git config
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-      - name: Update Kubernetes deployment file
-        env:
-          IMAGE_TAG: sha-${{ github.sha }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          REGISTRY: ghcr.io
-        run: |
-          # Define the new image with tag
-          NEW_IMAGE="${REGISTRY}/${GITHUB_REPOSITORY}:${IMAGE_TAG}"
-
-          # Update the deployment file directly
-          sed -i "s|image: ${REGISTRY}/.*|image: ${NEW_IMAGE}|g" kubernetes/deployment.yml
-
-          # Verify the change
-          echo "Updated deployment to use image: ${NEW_IMAGE}"
-          grep -A 1 "image:" kubernetes/deployment.yml
-
-      - name: Commit and push changes
-        run: |
-          git add kubernetes/deployment.yml
-          git commit -m "Update Kubernetes deployment with new image tag: ${{ needs.docker.outputs.image_tag }} [skip ci]" || echo "No changes to commit"
-          git push

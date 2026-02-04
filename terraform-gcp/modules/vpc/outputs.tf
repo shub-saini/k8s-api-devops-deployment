@@ -27,7 +27,6 @@ output "subnets" {
   }
 }
 
-# DYNAMIC NAT OUTPUTS
 output "nat_ips" {
   description = "List of NAT IP addresses"
   value       = local.create_nat && var.cloud_nat.nat_ip_allocate_option == "MANUAL_ONLY" ? google_compute_address.nat[*].address : []
@@ -43,7 +42,6 @@ output "router_self_link" {
   value       = local.create_nat ? google_compute_router.router[0].self_link : null
 }
 
-# DYNAMIC FIREWALL OUTPUTS
 output "firewall_rules" {
   description = "Map of all firewall rules created"
   value = {

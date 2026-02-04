@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun  ./src/server.ts",
-    "dev": "bun --watch ./src/server.ts",
-    "docker:dev": "prisma db push && prisma generate && bun --watch ./src/server.ts",
+    "start": "bun ./src/app.ts",
+    "dev": "bun --watch ./src/app.ts",
+    "docker:dev": "prisma db push && prisma generate && bun --watch ./src/app.ts",
     "build": "prisma generate && bun build src/app.ts --outdir dist --target bun"
   },
   "devDependencies": {
@@ -22,10 +22,9 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@prisma/adapter-neon": "^7.2.0",
+    "@types/express": "^5.0.6",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
-    "@types/express": "^5.0.6",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
