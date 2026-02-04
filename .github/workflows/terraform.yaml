@@ -14,7 +14,7 @@ permissions:
 
 env:
     GCP_REGION: us-central1
-    TF_VERSION: 1.7.0
+    TF_VERSION: "1.14"
     GCP_PROJECT_NUMBER: "546165975872"
     GCP_IDENTiTY_POOL: "github-action-pool"
     GCP_IDENTITY_POOL_PROVIDER: "github-actions-oidc-provider"
@@ -23,10 +23,37 @@ jobs:
     terraform:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout source code
+              uses: actions/checkout@v4
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: ${{ env.TF_VERSION }}
 
             - id: auth
               uses: google-github-actions/auth@v2
               with:
                   workload_identity_provider: "projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTiTY_POOL }}/providers/${{ env.GCP_IDENTITY_POOL_PROVIDER }}"
                   service_account: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
+
+            - name: Terraform init
+              id: init
+              run: cd terraform-gcp && terraform init
+
+            - name: Terraform format
+              id: fmt
+              run: terraform fmt -check
+
+            - name: Terraform validate
+              id: validate
+              run: terraform validate
+
+            - name: Terraform plan
+              id: plan
+              run: terraform plan -no-color -input=false -out planfile
+              continue-on-error: true
+
+            - name: Terraform plan status
+              if: steps.plan.outcome == 'failure'
+              run: exit 1
