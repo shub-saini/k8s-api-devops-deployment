@@ -34,12 +34,12 @@ output "nat_ips" {
 
 output "router_name" {
   description = "The name of the Cloud Router"
-  value       = local.create_nat ? google_compute_router.router[0].name : null
+  value       = local.create_nat ? google_compute_router.cloud_router[0].name : null
 }
 
 output "router_self_link" {
   description = "The self link of the Cloud Router"
-  value       = local.create_nat ? google_compute_router.router[0].self_link : null
+  value       = local.create_nat ? google_compute_router.cloud_router[0].self_link : null
 }
 
 output "firewall_rules" {
