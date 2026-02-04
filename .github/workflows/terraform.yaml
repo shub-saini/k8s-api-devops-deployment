@@ -25,6 +25,10 @@ jobs:
         steps:
             - name: Checkout source code
               uses: actions/checkout@v4
+              with:
+                  sparse-checkout: |
+                      terraform-gcp
+                  sparse-checkout-cone-mode: false
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
