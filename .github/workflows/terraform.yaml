@@ -1,11 +1,12 @@
 name: Terraform
 
 on:
-    push:
-        branches:
-            - main
-        paths:
-            - "terraform-gcp/**"
+    workflow_dispatch:
+    # push:
+    #     branches:
+    #         - main
+    #     paths:
+    #         - "terraform-gcp/**"
 
 permissions:
     contents: read # Access to your repository code
