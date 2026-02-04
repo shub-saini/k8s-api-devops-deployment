@@ -15,7 +15,7 @@ env:
     GCP_REGION: us-central1
     TF_VERSION: 1.7.0
     GCP_PROJECT_NUMBER: "546165975872"
-    GCP_IDENTiTY_POOL: "github-action-pool"
+    GCP_IDENTiTY_POOL: "github-actions-oidc-provider"
     GCP_IDENTITY_POOL_PROVIDER: "oidc"
 
 jobs:
