@@ -1,67 +1,111 @@
 name: Terraform
 
 on:
-    workflow_dispatch:
-    # push:
-    #     branches:
-    #         - main
-    #     paths:
-    #         - "terraform-gcp/**"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform-gcp/**"
 
 permissions:
-    contents: read # Access to your repository code
-    id-token: write # Ability to request OIDC tokens- Required for WIF!
+  contents: read # Access to your repository code
+  id-token: write # Ability to request OIDC tokens- Required for WIF!
 
 env:
-    GCP_REGION: us-central1
-    TF_VERSION: "1.14"
-    GCP_PROJECT_NUMBER: "546165975872"
-    GCP_IDENTiTY_POOL: "github-action-pool"
-    GCP_IDENTITY_POOL_PROVIDER: "github-actions-oidc-provider"
+  GCP_REGION: us-central1
+  TF_VERSION: "1.14"
+  GCP_PROJECT_NUMBER: "546165975872"
+  GCP_IDENTiTY_POOL: "github-action-pool"
+  GCP_IDENTITY_POOL_PROVIDER: "github-actions-oidc-provider"
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./terraform-gcp
 
 jobs:
-    terraform:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                shell: bash
-                working-directory: ./terraform-gcp
-        steps:
-            - name: Checkout source code
-              uses: actions/checkout@v4
-              with:
-                  sparse-checkout: |
-                      terraform-gcp
-                  sparse-checkout-cone-mode: false
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            terraform-gcp
+          sparse-checkout-cone-mode: false
 
-            - name: Setup Terraform
-              uses: hashicorp/setup-terraform@v3
-              with:
-                  terraform_version: ${{ env.TF_VERSION }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
 
-            - id: auth
-              uses: google-github-actions/auth@v2
-              with:
-                  workload_identity_provider: "projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTiTY_POOL }}/providers/${{ env.GCP_IDENTITY_POOL_PROVIDER }}"
-                  service_account: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTiTY_POOL }}/providers/${{ env.GCP_IDENTITY_POOL_PROVIDER }}"
+          service_account: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
 
-            - name: Terraform init
-              id: init
-              run: terraform init
+      - name: Terraform init
+        id: init
+        run: terraform init
 
-            - name: Terraform format
-              id: fmt
-              run: terraform fmt -check
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
 
-            - name: Terraform validate
-              id: validate
-              run: terraform validate
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
 
-            - name: Terraform plan
-              id: plan
-              run: terraform plan -no-color -input=false -out planfile
-              continue-on-error: true
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color -input=false -out planfile
+        continue-on-error: true
 
-            - name: Terraform plan status
-              if: steps.plan.outcome == 'failure'
-              run: exit 1
+      - name: Terraform plan status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Upload plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: planfile
+
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+
+    environment: staging
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            terraform-gcp
+          sparse-checkout-cone-mode: false
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTiTY_POOL }}/providers/${{ env.GCP_IDENTITY_POOL_PROVIDER }}"
+          service_account: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Download plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: terraform-gcp
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false -parallelism=1 planfile
