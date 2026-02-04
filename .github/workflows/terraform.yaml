@@ -43,7 +43,7 @@ jobs:
 
             - name: Terraform init
               id: init
-              run: cd terraform-gcp && terraform init
+              run: terraform init
 
             - name: Terraform format
               id: fmt
