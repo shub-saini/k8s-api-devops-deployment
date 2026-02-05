@@ -130,15 +130,6 @@ module "gke" {
   depends_on = [google_project.staging, google_project_service.apis]
 }
 
-resource "helm_release" "argocd" {
-  name             = "argocd"
-  repository       = "https://argoproj.github.io/argo-helm"
-  chart            = "argo-cd"
-  namespace        = "argocd"
-  create_namespace = true
-  version          = "9.3.7"
-}
-
 module "gcr" {
   source = "./modules/gcr"
 
