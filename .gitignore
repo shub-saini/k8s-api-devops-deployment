@@ -44,3 +44,5 @@ backend-secret.yml
 *.tfstate
 *.tfstate.*
 Dockerfile.test
+
+charts/

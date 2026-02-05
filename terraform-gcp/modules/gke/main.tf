@@ -63,6 +63,40 @@ resource "google_container_cluster" "primary" {
     }
   }
 
+
+  # Workload Identity (lets K8s pods authenticate as GCP service accounts)
+  workload_identity_config {
+    workload_pool = "${var.project_id}.svc.id.goog"
+  }
+
+  secret_manager_config {
+    enabled = true
+  }
+
+  dynamic "network_policy" {
+    for_each = var.enable_network_policy ? [1] : []
+    content {
+      enabled  = true
+      provider = "PROVIDER_UNSPECIFIED" # Uses Calico
+    }
+  }
+
+  # Logging & monitoring (Cloud Operations)
+  logging_service    = "logging.googleapis.com/kubernetes"
+  monitoring_service = "monitoring.googleapis.com/kubernetes"
+
+
+  enable_shielded_nodes = true
+  resource_labels       = var.resource_labels
+  deletion_protection   = var.deletion_protection
+
+  lifecycle {
+    ignore_changes = [
+      initial_node_count,
+      node_config,
+    ]
+  }
+
   # Master authorized networks (who can access K8s API)
   #   dynamic "master_authorized_networks_config" {
   #     for_each = length(var.master_authorized_networks) > 0 ? [1] : []
@@ -76,42 +110,6 @@ resource "google_container_cluster" "primary" {
   #       }
   #     }
   #   }
-
-  # Workload Identity (lets K8s pods authenticate as GCP service accounts)
-  dynamic "workload_identity_config" {
-    for_each = var.enable_workload_identity ? [1] : []
-    content {
-      workload_pool = "${var.project_id}.svc.id.goog"
-    }
-  }
-
-  # Network policy
-  dynamic "network_policy" {
-    for_each = var.enable_network_policy ? [1] : []
-    content {
-      enabled  = true
-      provider = "PROVIDER_UNSPECIFIED" # Uses Calico
-    }
-  }
-
-  # Logging & monitoring (Cloud Operations)
-  logging_service    = "logging.googleapis.com/kubernetes"
-  monitoring_service = "monitoring.googleapis.com/kubernetes"
-
-  # Security
-  enable_shielded_nodes = true
-
-  # Labels
-  resource_labels = var.resource_labels
-
-  deletion_protection = var.deletion_protection
-
-  lifecycle {
-    ignore_changes = [
-      initial_node_count,
-      node_config,
-    ]
-  }
 }
 
 resource "google_container_node_pool" "pools" {
@@ -180,7 +178,6 @@ resource "google_container_node_pool" "pools" {
       }
     }
 
-    # Shielded nodes (security)
     shielded_instance_config {
       enable_secure_boot          = true
       enable_integrity_monitoring = true

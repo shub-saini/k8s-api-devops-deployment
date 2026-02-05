@@ -41,3 +41,15 @@ output "kubectl_command" {
   description = "Command to configure kubectl"
   value       = "gcloud container clusters get-credentials ${google_container_cluster.primary.name} --zone=${var.zone} --project=${var.project_id}"
 }
+
+output "workload_identity_pool_id" {
+  value = "${var.project_id}.svc.id.goog"
+}
+
+output "cluster_endpoint" {
+  value = google_container_cluster.primary.endpoint
+}
+
+output "cluster_ca_certificate" {
+  value = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
+}
