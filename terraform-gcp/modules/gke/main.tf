@@ -36,7 +36,7 @@ resource "google_project_iam_member" "node_pool_metadata" {
 resource "google_container_cluster" "primary" {
   name     = var.name
   project  = var.project_id
-  location = var.region
+  location = var.zone
 
   network    = var.network_self_link
   subnetwork = var.subnetwork_self_link
@@ -119,7 +119,7 @@ resource "google_container_node_pool" "pools" {
 
   name     = each.value.name
   project  = var.project_id
-  location = var.region
+  location = var.zone
   cluster  = google_container_cluster.primary.name
 
   # Specific zones for this pool

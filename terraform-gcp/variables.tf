@@ -3,6 +3,11 @@ variable "region" {
   default = "us-central1"
 }
 
+variable "zone" {
+  type    = string
+  default = "us-central1-f"
+}
+
 variable "project_name" {
   type    = string
   default = "staging"

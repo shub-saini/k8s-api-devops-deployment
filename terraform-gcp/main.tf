@@ -8,6 +8,8 @@ resource "google_project" "staging" {
   project_id      = "${var.project_name}-${random_id.project.dec}"
   billing_account = var.billing_account_id
   org_id          = var.org_id
+
+  deletion_policy = "DELETE"
 }
 
 locals {
@@ -98,7 +100,7 @@ module "gke" {
 
   name       = "staging-gke"
   project_id = local.project_id
-  region     = var.region
+  zone       = var.zone
 
   network_self_link             = module.vpc.vpc_self_link
   subnetwork_self_link          = module.vpc.subnets["private-subnet-1"].self_link
@@ -113,8 +115,8 @@ module "gke" {
     {
       name           = "default-pool"
       machine_type   = "e2-medium"
-      min_node_count = 1
-      max_node_count = 2
+      min_node_count = 2
+      max_node_count = 3
       disk_size_gb   = 80
       disk_type      = "pd-standard"
       spot           = false

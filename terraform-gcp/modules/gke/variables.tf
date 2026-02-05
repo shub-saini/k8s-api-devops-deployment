@@ -8,8 +8,13 @@ variable "project_id" {
   type        = string
 }
 
-variable "region" {
-  description = "GCP region for the cluster"
+# variable "region" {
+#   description = "GCP region for the cluster"
+#   type        = string
+# }
+
+variable "zone" {
+  description = "GCP zone for the cluster"
   type        = string
 }
 
