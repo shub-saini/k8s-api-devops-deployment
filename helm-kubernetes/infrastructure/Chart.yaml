@@ -1,0 +1,5 @@
+apiVersion: v2
+name: infrastructure
+description: Infrastructure applications (cert-manager, ESO, monitoring)
+type: application
+version: 0.1.0

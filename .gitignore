@@ -37,8 +37,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 /generated/prisma
 
-backend-secret.yml
-
 .terraform/
 
 *.tfstate
@@ -46,3 +44,5 @@ backend-secret.yml
 Dockerfile.test
 
 charts/
+
+kubernetes-old/

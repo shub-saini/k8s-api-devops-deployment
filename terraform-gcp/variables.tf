@@ -35,6 +35,7 @@ variable "apis" {
     "sqladmin.googleapis.com",
     "servicenetworking.googleapis.com",
     "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
   ]
 }
 

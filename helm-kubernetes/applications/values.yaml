@@ -1,0 +1,12 @@
+# Global config
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/shub-saini/k8s-api-devops-deployment
+    targetRevision: main
+
+services:
+  backend:
+    enabled: true
+    # namespace: production
