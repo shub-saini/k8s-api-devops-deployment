@@ -17,10 +17,10 @@ module "gke" {
   node_pools = [
     {
       name           = "default-pool"
-      machine_type   = "e2-medium"
-      min_node_count = 2
-      max_node_count = 3
-      disk_size_gb   = 80
+      machine_type   = "e2-standard-4"
+      min_node_count = 1
+      max_node_count = 2
+      disk_size_gb   = 100
       disk_type      = "pd-standard"
       spot           = false
     },
