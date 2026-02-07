@@ -36,6 +36,8 @@ variable "apis" {
     "servicenetworking.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
+    "sts.googleapis.com",
+    "cloudresourcemanager.googleapis.com"
   ]
 }
 
