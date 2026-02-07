@@ -15,5 +15,5 @@ resource "google_service_account_iam_member" "workload_identity_binding" {
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${local.project_id}.svc.id.goog[external-secrets-system/external-secrets-operator-sa]" // [namespace/k8s service account with annotation]
 
-  depends_on = [google_project_service.apis, module.gke ]
+  depends_on = [google_project_service.apis, module.gke]
 }
