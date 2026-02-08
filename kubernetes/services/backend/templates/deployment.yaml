@@ -18,4 +18,28 @@ spec:
           imagePullPolicy: {{ .Values.backend.deployment.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.backend.deployment.containerPort }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: DATABASE_URL
+            
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
+          
+          volumeMounts:
+            - name: db-certs
+              mountPath: /etc/secrets
+              readOnly: true
         
+      volumes:
+        - name: db-certs
+          secret:
+            secretName: app-secrets
+            items:
+              - key: ca.pem
+                path: ca.pem

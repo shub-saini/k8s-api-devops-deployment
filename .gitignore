@@ -46,3 +46,4 @@ Dockerfile.test
 charts/
 
 kubernetes-old/
+ca.pem
