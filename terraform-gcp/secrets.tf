@@ -17,3 +17,33 @@ resource "google_service_account_iam_member" "workload_identity_binding" {
 
   depends_on = [google_project_service.apis, module.gke]
 }
+
+resource "google_secret_manager_secret" "db_connection_string" {
+  project   = local.project_id
+  secret_id = "db-connection-string"
+
+  replication {
+    auto {}
+  }
+  deletion_protection = false
+}
+
+resource "google_secret_manager_secret" "db_ca_certificate" {
+  project   = local.project_id
+  secret_id = "db-ca-cert"
+
+  replication {
+    auto {}
+  }
+  deletion_protection = false
+}
+
+resource "google_secret_manager_secret" "jwt_secret" {
+  project   = local.project_id
+  secret_id = "jwt-secret"
+
+  replication {
+    auto {}
+  }
+  deletion_protection = false
+}
