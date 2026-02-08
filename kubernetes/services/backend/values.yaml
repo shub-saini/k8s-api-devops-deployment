@@ -2,10 +2,14 @@ backend:
   deployment:
     replicaCount: 2
     image:
-      repository: us-central1-docker.pkg.dev/project-621d5d68-15ca-433f-9a1/todobackend/api
-      tag: v1
+      # repository: us-central1-docker.pkg.dev/project-621d5d68-15ca-433f-9a1/todobackend/api
+      repository: nginx
+      # tag: v1
+      tag: latest
       pullPolicy: IfNotPresent
-    containerPort: 3000
+    # containerPort: 3000
+    containerPort: 80
+
     env:
       NODE_ENV: prod
     resources:
@@ -19,7 +23,5 @@ backend:
   service:
     type: LoadBalancer
     port: 80
-    targetPort: 3000
-
-cluster:
-  serviceAccountName: gke-node-image-and-secret-pull@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com
+    # targetPort: 3000
+    targetPort: 80
