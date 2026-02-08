@@ -23,7 +23,7 @@ kind: Ingress
 metadata:
   name: app-ingress
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-rewrite-api@kubernetescrd, default-rewrite-https@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: default-rewrite-api@kubernetescrd, default-redirect-https@kubernetescrd
 spec:
   tls:
     - hosts:
