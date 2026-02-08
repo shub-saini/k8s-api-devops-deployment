@@ -20,6 +20,7 @@ module "gke" {
       machine_type   = "e2-standard-4"
       min_node_count = 1
       max_node_count = 2
+      initial_node_count = 1
       disk_size_gb   = 100
       disk_type      = "pd-standard"
       spot           = false
