@@ -21,7 +21,7 @@ backend:
         memory: '512Mi'
 
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 80
     # targetPort: 3000
     targetPort: 80

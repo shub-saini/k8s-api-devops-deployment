@@ -35,6 +35,7 @@ spec:
     path: kubernetes/cluster-config
   destination:
     server: https://kubernetes.default.svc
+    namespace: default
   syncPolicy:
     automated:
       prune: true
