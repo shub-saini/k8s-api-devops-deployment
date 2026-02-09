@@ -1,16 +1,26 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: vyntix-wildcard-cert
+  name: backend-tls-certificate
   namespace: default
 spec:
-  secretName: vyntix-cert-secret
+  secretName: backend-cert-secret
   issuerRef:
     name: letsencrypt-ci
     kind: ClusterIssuer
   dnsNames:
-    - '*.vyntix.tech' #vyntix.tech -> Root domain does not comes under this
+    - 'backend.vyntix.tech'
 
-  privateKey:
-    algorithm: RSA
-    size: 2048
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-tls-certificate
+  namespace: argocd
+spec:
+  secretName: argo-cert-secret
+  issuerRef:
+    name: letsencrypt-ci
+    kind: ClusterIssuer
+  dnsNames:
+    - 'argo.vyntix.tech'

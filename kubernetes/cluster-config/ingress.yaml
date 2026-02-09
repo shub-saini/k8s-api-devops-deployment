@@ -32,7 +32,7 @@ spec:
   tls:
     - hosts:
         - backend.vyntix.tech
-      secretName: vyntix-cert-secret
+      secretName: backend-cert-secret
   rules:
     - host: backend.vyntix.tech
       http:
@@ -58,7 +58,7 @@ spec:
   tls:
     - hosts:
         - argo.vyntix.tech
-      secretName: vyntix-cert-secret
+      secretName: argo-cert-secret
   rules:
     - host: argo.vyntix.tech
       http:
