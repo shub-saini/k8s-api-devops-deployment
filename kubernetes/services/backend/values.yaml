@@ -3,12 +3,9 @@ backend:
     replicaCount: 2
     image:
       repository: us-central1-docker.pkg.dev/staging-55656/stage-images/api
-      # repository: nginx
       tag: v1
-      # tag: latest
       pullPolicy: IfNotPresent
     containerPort: 3000
-    # containerPort: 80
 
     env:
       NODE_ENV: production
@@ -24,4 +21,3 @@ backend:
     type: ClusterIP
     port: 80
     targetPort: 3000
-    # targetPort: 80
