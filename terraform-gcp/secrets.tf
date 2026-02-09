@@ -26,6 +26,8 @@ resource "google_secret_manager_secret" "db_connection_string" {
     auto {}
   }
   deletion_protection = false
+
+  depends_on = [ google_project_service.apis ]
 }
 
 resource "google_secret_manager_secret" "db_ca_certificate" {
@@ -36,6 +38,8 @@ resource "google_secret_manager_secret" "db_ca_certificate" {
     auto {}
   }
   deletion_protection = false
+
+  depends_on = [ google_project_service.apis ]
 }
 
 resource "google_secret_manager_secret" "jwt_secret" {
@@ -46,4 +50,6 @@ resource "google_secret_manager_secret" "jwt_secret" {
     auto {}
   }
   deletion_protection = false
+
+  depends_on = [ google_project_service.apis ]
 }
