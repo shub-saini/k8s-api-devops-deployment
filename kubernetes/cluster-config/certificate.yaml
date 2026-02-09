@@ -10,3 +10,7 @@ spec:
     kind: ClusterIssuer
   dnsNames:
     - '*.vyntix.tech'
+
+  privateKey:
+    algorithm: RSA
+    size: 2048
