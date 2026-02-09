@@ -33,7 +33,7 @@ spec:
           
           volumeMounts:
             - name: db-certs
-              mountPath: /app
+              mountPath: /app/cert
               readOnly: true
         
       volumes:
