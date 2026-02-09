@@ -4,3 +4,4 @@ kubernetes/
 terraform/
 .github/
 dist/
+ca.pem
