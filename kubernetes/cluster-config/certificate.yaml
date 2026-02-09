@@ -9,7 +9,7 @@ spec:
     name: letsencrypt-ci
     kind: ClusterIssuer
   dnsNames:
-    - '*.vyntix.tech'
+    - '*.vyntix.tech' #vyntix.tech -> Root domain does not comes under this
 
   privateKey:
     algorithm: RSA
