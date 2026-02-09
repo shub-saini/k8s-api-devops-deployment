@@ -7,7 +7,7 @@ spec:
     email: shubsaini666@gmail.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: letsencrypt-learn-private-key
+      name: letsencrypt-private-key
     solvers:
       - http01:
           ingress:

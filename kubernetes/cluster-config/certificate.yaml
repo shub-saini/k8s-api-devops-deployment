@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: cert
+  name: vyntix-wildcard-cert
   namespace: default
 spec:
-  secretName: tls-cert-ca-key-pair
+  secretName: vyntix-cert-secret
   issuerRef:
     name: letsencrypt-ci
     kind: ClusterIssuer
   dnsNames:
-    - backend.vyntix.tech
+    - '*.vyntix.tech'
