@@ -2,16 +2,16 @@ backend:
   deployment:
     replicaCount: 2
     image:
-      # repository: us-central1-docker.pkg.dev/project-621d5d68-15ca-433f-9a1/todobackend/api
-      repository: nginx
-      # tag: v1
-      tag: latest
+      repository: us-central1-docker.pkg.dev/staging-55656/stage-images/api
+      # repository: nginx
+      tag: v1
+      # tag: latest
       pullPolicy: IfNotPresent
-    # containerPort: 3000
-    containerPort: 80
+    containerPort: 3000
+    # containerPort: 80
 
     env:
-      NODE_ENV: prod
+      NODE_ENV: production
     resources:
       requests:
         cpu: '100m'
@@ -23,5 +23,5 @@ backend:
   service:
     type: ClusterIP
     port: 80
-    # targetPort: 3000
-    targetPort: 80
+    targetPort: 3000
+    # targetPort: 80

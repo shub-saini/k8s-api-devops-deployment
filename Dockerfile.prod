@@ -4,7 +4,7 @@ COPY bun.lock package.json ./
 RUN bun install --production --frozen-lockfile
 COPY . .
 RUN bunx prisma generate
-RUN NODE_ENV=prod bun run build
+RUN NODE_ENV=production bun run build
 
 FROM oven/bun:1-debian AS runner
 WORKDIR /app

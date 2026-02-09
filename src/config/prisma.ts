@@ -1,17 +1,22 @@
 import dotenv from 'dotenv';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
+import { existsSync } from 'fs';
 
-dotenv.config({
-  path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local',
-  override: true,
-});
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction) {
+  if (existsSync('.env')) {
+    dotenv.config({ path: '.env', override: true });
+  }
+} else {
+  dotenv.config({ path: '.env.local', override: true });
+}
 
 const connectionString = process.env.DATABASE_URL!;
 if (!connectionString) {
   throw new Error('DATABASE_URL is missing');
 }
-console.log(connectionString);
 
 const adapter = new PrismaPg({ connectionString });
 
