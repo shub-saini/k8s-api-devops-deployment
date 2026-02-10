@@ -47,3 +47,4 @@ charts/
 
 kubernetes-old/
 ca.pem
+cert/

@@ -1,0 +1,112 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 81.5.0
+    helm:
+      values:
+        grafana:
+          enabled: true
+          adminPassword: 'changelater'
+
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            hosts:
+              - grafana.vyntix.tech
+            tls:
+              - hosts:
+                  - grafana.vyntix.tech
+                secretName: grafana-cert-secret
+
+          persistence:
+            enabled: true
+            size: 5Gi
+            storageClassName: standard-rwo
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          # Sidecar picks up ConfigMaps with dashboards automatically
+          sidecar:
+            dashboards: # configmaps with grafana_dashboard: "1"
+              enabled: true
+            datasources: # configmaps with grafana_datasource: "1"
+              enabled: true
+
+        prometheus:
+          prometheusSpec:
+            retention: 15d
+            retentionSize: '10GB'
+
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ['ReadWriteOnce']
+                  resources:
+                    requests:
+                      storage: 20Gi
+                  storageClassName: standard-rwo
+
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                cpu: 1000m
+                memory: 2Gi
+
+            # Scrape configs from all namespaces (important for ArgoCD env)
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            ruleSelectorNilUsesHelmValues: false
+
+        alertmanager:
+          enabled: true
+          alertmanagerSpec:
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ['ReadWriteOnce']
+                  resources:
+                    requests:
+                      storage: 2Gi
+                  storageClassName: standard-rwo
+
+        nodeExporter:
+          enabled: true
+
+        kubeStateMetrics:
+          enabled: true
+
+        # Built-in k8s component scraping
+        kubeEtcd:
+          # etcd runs inside GKE's managed control plane — unreachable.
+          enabled: false # set true only if etcd is accessible
+        kubeControllerManager:
+          enabled: false # often blocked in managed k8s (EKS/GKE/AKS)
+        kubeScheduler:
+          enabled: false # same — managed clusters block this
+        kubeProxy:
+          enabled: false # disable if using eBPF/Cilium
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
