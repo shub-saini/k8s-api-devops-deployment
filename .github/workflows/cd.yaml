@@ -1,23 +1,16 @@
 name: Continous Deployment
 
 on:
-  workflow_dispatch:
-  # workflow_run:
-  #   workflows: ["Build and Test"]
-  #   types:
-  #     - completed
-  # push:
-  #   branches: [main]
-  #   paths-ignore:
-  #     - "helm-kubernetes/**"
-  #     - "terraform-aws-old/**"
-  #     - "terraform-gcp/**"
+  workflow_run:
+    workflows: ["Continuos Integration"]
+    types:
+      - completed
 
 jobs:
   update-values-in-helm:
-    name: Update Kubernetes Deployment
+    name: Update Kubernetes values.yaml for Backend service
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,22 +24,19 @@ jobs:
 
       - name: Update Kubernetes deployment file
         env:
-          IMAGE_TAG: sha-${{ github.sha }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          REGISTRY: ghcr.io
+          NEW_IMAGE_TAG: sha-${{ github.event.workflow_run.head_sha }}
         run: |
-          # Define the new image with tag
-          NEW_IMAGE="${REGISTRY}/${GITHUB_REPOSITORY}:${IMAGE_TAG}"
-
-          # Update the deployment file directly
-          sed -i "s|image: ${REGISTRY}/.*|image: ${NEW_IMAGE}|g" kubernetes/deployment.yml
+          # Update the values.yaml file directly
+          sed -i "s|tag:.*|tag: ${NEW_IMAGE_TAG}|g" kubernetes/services/backend/values.yaml
 
           # Verify the change
-          echo "Updated deployment to use image: ${NEW_IMAGE}"
-          grep -A 1 "image:" kubernetes/deployment.yml
+          echo "Updated deployment to use image: ${NEW_IMAGE_TAG}"
+          grep "tag:" kubernetes/services/backend/values.yaml
 
       - name: Commit and push changes
+        env:
+          NEW_IMAGE_TAG: sha-${{ github.event.workflow_run.head_sha }}
         run: |
-          git add kubernetes/deployment.yml
-          git commit -m "Update Kubernetes deployment with new image tag: ${{ needs.docker.outputs.image_tag }} [skip ci]" || echo "No changes to commit"
+          git add kubernetes/services/backend/values.yaml
+          git commit -m "Update Kubernetes deployment with new image tag: ${env.NEW_IMAGE_TAG} [skip ci]" || echo "No changes to commit"
           git push

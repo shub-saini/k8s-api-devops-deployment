@@ -2,12 +2,12 @@ name: Continuos Integration
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [main]
-  #   paths-ignore:
-  #     - "helm-kubernetes/**"
-  #     - "terraform-aws-old/**"
-  #     - "terraform-gcp/**"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "kubernetes/**"
+      - "terraform-aws-old/**"
+      - "terraform-gcp/**"
 
 permissions:
   contents: read
@@ -108,7 +108,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Set image tag output
-        id: set_output
-        run: echo "image_tag=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT

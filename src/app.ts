@@ -15,6 +15,10 @@ app.use(metricsMiddleware);
 app.use('/api', routes);
 app.use(errorHandler);
 
+app.get('/', (req, res) => {
+  res.status(200).send('Test endpoint for cicd');
+});
+
 app.get('/healthz', (req, res) => {
   res.status(200).json({
     status: 'OK',
