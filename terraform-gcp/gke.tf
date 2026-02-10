@@ -41,4 +41,12 @@ resource "helm_release" "argocd" {
   namespace        = "argocd"
   create_namespace = true
   version          = "9.3.7"
+
+  values = [
+    <<-EOT
+    server:
+      extraArgs:
+        - --insecure
+    EOT
+  ]
 }
