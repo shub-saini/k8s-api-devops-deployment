@@ -2,7 +2,7 @@ backend:
   deployment:
     replicaCount: 2
     image:
-      repository: us-central1-docker.pkg.dev/staging-55656/stage-images/backend
+      repository: us-central1-docker.pkg.dev/staging-60514/stage-images/backend
       tag: sha-f142b2af80be67e6e4d0c42a7d28b6c0d1ee26e5
       pullPolicy: IfNotPresent
     containerPort: 3000
