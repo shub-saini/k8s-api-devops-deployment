@@ -40,7 +40,7 @@ jobs:
     name: Docker build and push
     runs-on: ubuntu-latest
     env:
-      WORKLOAD_IDENTITY_PROVIDER: "projects/546165975872/locations/global/workloadIdentityPools/$github-action-pool/providers/github-actions-oidc-provider"
+      WORKLOAD_IDENTITY_PROVIDER: "projects/546165975872/locations/global/workloadIdentityPools/github-action-pool/providers/github-actions-oidc-provider"
       SERVICE_ACCOUNT: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
       PROJECT_ID: "staging-60514"
       AR_LOCATION: "us-central1"
