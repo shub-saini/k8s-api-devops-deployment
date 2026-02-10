@@ -10,7 +10,7 @@ spec:
     chart: kube-prometheus-stack
     targetRevision: 81.5.0
     helm:
-      values:
+      values: |
         grafana:
           enabled: true
           adminPassword: 'changelater'
