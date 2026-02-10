@@ -13,11 +13,9 @@ permissions:
   id-token: write # Ability to request OIDC tokens- Required for WIF!
 
 env:
-  GCP_REGION: us-central1
   TF_VERSION: "1.14"
-  GCP_PROJECT_NUMBER: "546165975872"
-  GCP_IDENTiTY_POOL: "github-action-pool"
-  GCP_IDENTITY_POOL_PROVIDER: "github-actions-oidc-provider"
+  WORKLOAD_IDENTITY_PROVIDER: "projects/546165975872/locations/global/workloadIdentityPools/$github-action-pool/providers/github-actions-oidc-provider"
+  SERVICE_ACCOUNT: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
 
 defaults:
   run:
@@ -43,8 +41,8 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTiTY_POOL }}/providers/${{ env.GCP_IDENTITY_POOL_PROVIDER }}"
-          service_account: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
 
       - name: Terraform init
         id: init
@@ -95,8 +93,8 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_IDENTiTY_POOL }}/providers/${{ env.GCP_IDENTITY_POOL_PROVIDER }}"
-          service_account: "terraform-github-actions@project-621d5d68-15ca-433f-9a1.iam.gserviceaccount.com"
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
 
       - name: Terraform init
         run: terraform init

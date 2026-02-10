@@ -1,10 +1,11 @@
 name: Continous Deployment
 
 on:
-  workflow_run:
-    workflows: ["Build and Test"]
-    types:
-      - completed
+  workflow_dispatch:
+  # workflow_run:
+  #   workflows: ["Build and Test"]
+  #   types:
+  #     - completed
   # push:
   #   branches: [main]
   #   paths-ignore:
