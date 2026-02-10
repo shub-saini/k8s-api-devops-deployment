@@ -14,17 +14,7 @@ spec:
         grafana:
           enabled: true
           adminPassword: 'changelater'
-
-          ingress:
-            enabled: true
-            ingressClassName: traefik
-            hosts:
-              - grafana.vyntix.tech
-            tls:
-              - hosts:
-                  - grafana.vyntix.tech
-                secretName: grafana-cert-secret
-
+          
           persistence:
             enabled: true
             size: 5Gi
