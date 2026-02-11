@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus-grafana
+  name: kube-prometheus-stack
   namespace: argocd
 spec:
   project: default
@@ -11,34 +11,27 @@ spec:
     targetRevision: 81.5.0
     helm:
       values: |
+        fullnameOverride: kube-prometheus-stack
+
         grafana:
           enabled: true
           adminPassword: 'changelater'
-          
           persistence:
             enabled: true
             size: 5Gi
             storageClassName: standard-rwo
 
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
-
-          # Sidecar picks up ConfigMaps with dashboards automatically
-          sidecar:
-            dashboards: # configmaps with grafana_dashboard: "1"
-              enabled: true
-            datasources: # configmaps with grafana_datasource: "1"
-              enabled: true
-
         prometheus:
           prometheusSpec:
+            replicas: 1
             retention: 15d
             retentionSize: '10GB'
+
+            # let Prometheus see ALL ServiceMonitors & PodMonitors in the namespace
+            serviceMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelector: {}              # ← empty = match everything
+            podMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelector: {}
 
             storageSpec:
               volumeClaimTemplate:
@@ -48,19 +41,6 @@ spec:
                     requests:
                       storage: 20Gi
                   storageClassName: standard-rwo
-
-            resources:
-              requests:
-                cpu: 200m
-                memory: 512Mi
-              limits:
-                cpu: 1000m
-                memory: 2Gi
-
-            # Scrape configs from all namespaces (important for ArgoCD env)
-            serviceMonitorSelectorNilUsesHelmValues: false
-            podMonitorSelectorNilUsesHelmValues: false
-            ruleSelectorNilUsesHelmValues: false
 
         alertmanager:
           enabled: true
@@ -80,16 +60,22 @@ spec:
         kubeStateMetrics:
           enabled: true
 
-        # Built-in k8s component scraping
+        # Usually not reachable in managed clusters (GKE/AKS/EKS) → disable to avoid noise
         kubeEtcd:
-          # etcd runs inside GKE's managed control plane — unreachable.
-          enabled: false # set true only if etcd is accessible
+          enabled: false
         kubeControllerManager:
-          enabled: false # often blocked in managed k8s (EKS/GKE/AKS)
+          enabled: false
         kubeScheduler:
-          enabled: false # same — managed clusters block this
+          enabled: false
         kubeProxy:
-          enabled: false # disable if using eBPF/Cilium
+          enabled: false
+
+        defaultRules:
+          create: true
+
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: true
 
   destination:
     server: https://kubernetes.default.svc
