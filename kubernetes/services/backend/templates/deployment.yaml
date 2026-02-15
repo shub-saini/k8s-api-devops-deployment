@@ -31,10 +31,36 @@ spec:
                   name: app-secrets
                   key: JWT_SECRET
           
+          resources:
+            requests:
+              memory: "{{ .Values.backend.deployment.resources.requests.memory }}"
+              cpu: "{{ .Values.backend.deployment.resources.requests.cpu }}"
+            limits:
+              memory: "{{ .Values.backend.deployment.resources.limits.memory }}"
+              cpu: "{{ .Values.backend.deployment.resources.limits.cpu }}"
+          
           volumeMounts:
             - name: db-certs
               mountPath: /app/cert
               readOnly: true
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.backend.deployment.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.deployment.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
         
       volumes:
         - name: db-certs
