@@ -48,3 +48,5 @@ charts/
 kubernetes-old/
 ca.pem
 cert/
+
+future.md

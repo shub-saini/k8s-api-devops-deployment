@@ -280,12 +280,6 @@ resources:
 - **Grafana**: Visualizes metrics with pre-configured dashboards
 - **Application Metrics**: Custom business metrics exposed via Prometheus client
 
-### Logging (Promtail + Loki)
-
-- **Promtail**: Ships logs from pods to Loki
-- **Winston**: Structured JSON logging in application
-- **Centralized logging** for debugging and auditing
-
 ---
 
 ## Rollback Strategy
@@ -369,12 +363,6 @@ git push origin main
 - **TLS everywhere**: All external traffic encrypted
 - **OIDC for CI/CD**: No long-lived GitHub credentials
 
-### Supply Chain Security
-
-- **Image signing**: (Future) Cosign integration
-- **SBOM generation**: (Future) Syft integration
-- **Admission control**: (Future) OPA/Gatekeeper policies
-
 ---
 
 ## Deployment Workflow
@@ -401,12 +389,6 @@ git push origin main
    kubectl apply -f kubernetes/app-of-apps.yaml
    ```
 
-4. **Monitor Argo CD**:
-   ```bash
-   kubectl port-forward svc/argocd-server -n argocd 8080:443
-   # Access at https://localhost:8080
-   ```
-
 ### Daily Development Workflow
 
 1. **Develop**: Make code changes locally
@@ -414,7 +396,7 @@ git push origin main
 3. **CI**: GitHub Actions builds, scans, and pushes image
 4. **CD**: GitHub Actions updates Helm values
 5. **Sync**: Argo CD deploys new version automatically
-6. **Monitor**: Check Grafana dashboards and logs
+6. **Monitor**: Check Grafana dashboards
 
 ---
 
@@ -427,71 +409,5 @@ git push origin main
 - ✅ **Infrastructure as Code** with modular Terraform
 - ✅ **Declarative everything**: Git is the source of truth
 - ✅ **Built-in rollback** at multiple layers (Git, Argo CD, Helm, DB)
-
----
-
-## Future Enhancements
-
-### Progressive Delivery
-
-- [ ] **Argo Rollouts** for canary deployments
-- [ ] **Flagger** for automated rollback on metric anomalies
-- [ ] **Traffic splitting** with weighted routing
-
-### Scalability
-
-- [ ] **Horizontal Pod Autoscaler** (HPA) based on custom metrics
-- [ ] **Vertical Pod Autoscaler** (VPA) for resource optimization
-- [ ] **Cluster Autoscaler** for node scaling
-
-### Security
-
-- [ ] **OPA/Gatekeeper** for policy enforcement
-- [ ] **Falco** for runtime security monitoring
-- [ ] **Image signing** with Cosign and admission controller
-
-### Observability
-
-- [ ] **Distributed tracing** with Jaeger/Tempo
-- [ ] **Error tracking** with Sentry
-- [ ] **SLO monitoring** with custom SLIs
-
-### Multi-Environment
-
-- [ ] **Staging environment** with separate GKE cluster
-- [ ] **Environment promotion** workflow
-- [ ] **Feature flags** for gradual rollouts
-
----
-
-## Project Architecture Decisions
-
-### Why GCP over AWS?
-
-- **Workload Identity**: More elegant than AWS IRSA
-- **GKE Autopilot**: Simplified node management
-- **Integrated Secret Manager**: Seamless ESO integration
-- **Cost**: GCP free tier and sustained use discounts
-
-### Why Argo CD over Flux?
-
-- **Better UI**: Visual representation of sync state
-- **App-of-Apps pattern**: Clear dependency management
-- **Sync waves**: Controlled bootstrapping order
-- **Mature ecosystem**: More integrations and plugins
-
-### Why External Secrets Operator over Sealed Secrets?
-
-- **Dynamic rotation**: Secrets can be rotated in GCP without redeployment
-- **Centralized management**: Single source of truth in Secret Manager
-- **Audit trail**: GCP logs all secret access
-- **No manual encryption**: Simpler developer workflow
-
-### Why Traefik over NGINX Ingress?
-
-- **Native Kubernetes integration**: Better CRD support
-- **Dynamic configuration**: No reload needed
-- **Middleware support**: Advanced routing and auth
-- **Modern**: Built for cloud-native from the ground up
 
 ---
