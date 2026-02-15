@@ -5,6 +5,7 @@ import client from 'prom-client';
 import { metricsMiddleware } from './middlewares/metrics.middeware';
 import cookieParser from 'cookie-parser';
 import logger from './config/logger';
+import prisma from './config/prisma';
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -19,12 +20,21 @@ app.get('/', (req, res) => {
   res.status(200).send('Test endpoint for cicd');
 });
 
-app.get('/healthz', (req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });
+});
+
+app.get('/ready', async (req, res) => {
+  try {
+    await prisma.$connect();
+    res.status(200).json({ status: 'ready', database: 'connected' });
+  } catch (error) {
+    res.status(503).json({ status: 'not ready', database: 'disconnected' });
+  }
 });
 
 app.get('/metrics', async (req, res) => {
