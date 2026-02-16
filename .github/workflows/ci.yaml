@@ -8,6 +8,7 @@ on:
       - "kubernetes/**"
       - "terraform-aws-old/**"
       - "terraform-gcp/**"
+      - "*.md"
 
 permissions:
   contents: read

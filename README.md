@@ -9,6 +9,8 @@ Infrastructure is provisioned with Terraform using Workload Identity Federation,
 
 ## Architecture Overview
 
+![Cloud-Devops Architecture](./assets/architecture.png)
+
 **Principles**
 
 - Git as the single source of truth
@@ -17,7 +19,7 @@ Infrastructure is provisioned with Terraform using Workload Identity Federation,
 - Secure, private-by-default networking (nodes on private subnets, no external IPs)
 - Automated CI pipelines with security scanning (Trivy)
 - Dynamic secrets management via External Secrets Operator
-- Full observability with Prometheus, Grafana, and Promtail
+- Full monitoring with Prometheus, Grafana, and Promtail
 
 **Tech Stack**
 
